@@ -1,7 +1,21 @@
 import streamlit as st
+import pandas as pd
 import json
 from utils import transform_dataframe, load_data
 from page_config import page_config
+
+
+def load_data(file, sheet_name=None):
+    if file.name.endswith('xlsx'):
+        if sheet_name:
+            df = pd.read_excel(file, sheet_name=sheet_name)
+        else:
+            df = pd.read_excel(file)
+    elif file.name.endswith('csv'):
+        df = pd.read_csv(file)
+    else:
+        raise ValueError("Unsupported file type")
+    return df
 
 
 def main():
@@ -15,21 +29,29 @@ def main():
             "**选择模式**",
             options,
             index=0,
-            horizontal=True,
-            help="特征为列，则特征就是表头。特征为行，则需要初始化任意表头，例如feature, item"
+            help="特征为列，则特征就是表头。特征为行，则需要初始化任意表头，例如feature, item",
+            horizontal=True
         )
 
         file_uploaded = st.file_uploader("Upload a CSV or Excel file", type=['csv', 'xlsx'])
+
+        sheet_name = None
+        if file_uploaded and file_uploaded.name.endswith('xlsx'):
+            # Load the Excel file to get sheet names
+            excel_file = pd.ExcelFile(file_uploaded)
+
+            # Let the user select a sheet
+            sheet_name = st.selectbox("选择工作表", excel_file.sheet_names)
 
     # Initialize df as None
     df = None
 
     if IsColumn == "特征为列":
         if file_uploaded:
-            df = load_data(file_uploaded)
+            df = load_data(file_uploaded, sheet_name)
     else:
         if file_uploaded:
-            df = load_data(file_uploaded)
+            df = load_data(file_uploaded, sheet_name)
             df = transform_dataframe(df)
 
     # Only proceed if df is defined (i.e., a file was successfully uploaded)
@@ -61,7 +83,7 @@ def main():
             )
 
     else:
-        st.warning("请上传一个文件来继续。")
+        st.warning("请上传一个文件进行转换")
 
 
 if __name__ == '__main__':
