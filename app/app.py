@@ -1,18 +1,11 @@
 import streamlit as st
 import json
 from utils import transform_dataframe, load_data
+from page_config import page_config
 
 
 def main():
-    st.set_page_config(page_title="Excel2JSON", layout="wide", page_icon="🎲")
-    css = """
-           <style>
-           [data-testid="stSidebar"][aria-expanded="true"]{
-               min-width: 350px;
-               max-width: 350px;
-           }
-           """
-    st.markdown(css, unsafe_allow_html=True)
+    page_config()
 
     st.title('🎲 Excel2JSON')
 
