@@ -15,8 +15,8 @@ def main():
             "**选择模式**",
             options,
             index=0,
+            horizontal=True,
             help="特征为列，则特征就是表头。特征为行，则需要初始化任意表头，例如feature, item"
-            horizontal=True
         )
 
         file_uploaded = st.file_uploader("Upload a CSV or Excel file", type=['csv', 'xlsx'])
